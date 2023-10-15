@@ -1,0 +1,72 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "./prisma-client"
+}
+
+model User {
+  id        Int         @id @default(autoincrement())
+  username  String      @db.VarChar(255)
+  email     String      @db.VarChar(255)
+  password  String      @db.VarChar(1024)
+  Programme Programme[]
+}
+
+model Region {
+  id          Int       @id @default(autoincrement())
+  name        String
+  description String    @default("")
+  Country     Country[]
+}
+
+model Country {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String      @default("")
+  region      Region      @relation(fields: [regionId], references: [id])
+  regionId    Int
+  Programme   Programme[]
+}
+
+model ThematicArea {
+  id           Int         @id @default(autoincrement())
+  name         String
+  descrviption String      @default("")
+  Programme    Programme[]
+}
+
+//Use program type to fetch the appropriate region
+model Programme {
+  id             Int           @id @default(autoincrement())
+  programme_type ProgrammeType
+  region_id      Int
+  cover_image    String        @db.LongText
+  title          String
+  description    String
+  content        String
+  created        DateTime      @default(now())
+  author         User          @relation(fields: [authorId], references: [id])
+  thematic_area  ThematicArea? @relation(fields: [thematicAreaId], references: [id])
+  authorId       Int
+  thematicAreaId Int?
+  country        Country?      @relation(fields: [countryId], references: [id])
+  countryId      Int?
+}
+
+enum ProgrammeType {
+  GLOBAL
+  COUNTRY
+  REGION
+  UN_REFORMS
+  SOUTH_CORPOPRATION
+}
+
+//INTER_REGIONAL_PROGRAMMES
+//UN-REFORMS ||| Like a constitution
