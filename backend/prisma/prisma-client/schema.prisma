@@ -48,9 +48,9 @@ model Programme {
   programme_type ProgrammeType
   region_id      Int
   cover_image    String        @db.LongText
-  title          String
-  description    String
-  content        String
+  title          String        @db.LongText
+  description    String        @db.LongText
+  content        String        @db.Text
   created        DateTime      @default(now())
   author         User          @relation(fields: [authorId], references: [id])
   thematic_area  ThematicArea? @relation(fields: [thematicAreaId], references: [id])

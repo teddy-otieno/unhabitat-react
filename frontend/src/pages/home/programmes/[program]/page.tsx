@@ -1,21 +1,17 @@
-/* eslint-disable @next/next/no-img-element */
-import { PrismaClient, Programme } from "$/prisma/prisma-client";
-import dynamic from "next/dynamic";
 import React from "react";
-import { use } from "react";
 
-export default function Programme({ params }: { params: { program: string } }) {
+export default function Programme() {
   const [programme, set_programme] = React.useState<Programme | null>(null);
 
   React.useEffect(() => {
     console.log("INSIDE EFFECT");
     void (async () => {
-      const p = await fetch(`/api/programmes/${params.program}`, {
+      const p = await fetch(`/api/programmes/${programme}`, {
         method: "GET",
       }).then((x) => x.json());
       set_programme(p);
     })();
-  }, [params.program]);
+  }, [programme]);
 
   return (
     <div className="flex flex-col items-center p-8">
