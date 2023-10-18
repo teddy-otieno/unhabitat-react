@@ -4,6 +4,7 @@ import LoginPage from "./pages/login";
 import Signup from "./pages/signup/page";
 import HomePage from "./pages/home/homepage";
 import AddProgram from "./pages/home/programmes/add/add_program";
+import ViewProgramme from "./pages/home/programmes/[program]/page";
 
 const router = createBrowserRouter([
   {
@@ -21,6 +22,10 @@ const router = createBrowserRouter([
   {
     path: "/home/programmes/add",
     element: <AddProgram />,
+  },
+  {
+    path: "/home/programmes/:id",
+    element: <ViewProgramme />,
   },
 ]);
 

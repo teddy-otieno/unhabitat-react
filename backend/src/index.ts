@@ -239,6 +239,45 @@ app.post("/api/home/programmes/", async (req, res) => {
   }
 });
 
+app.get("/api/home/programmes/:id", async (req, res) => {
+  const programme = await db.programme.findFirst({
+    where: {
+      id: parseInt(req.params.id),
+    },
+  });
+
+  res.json(programme);
+});
+
+app.put("/api/home/programmes/:id", async (req, res) => {
+  const existing = (await db.programme.findFirst({
+    where: { id: parseInt(req.params.id) },
+  })) as any;
+
+  let changes = {};
+  const existing_entries = Object.entries(existing!);
+  const new_entries = Object.entries(req.body);
+
+  if (existing === null) {
+    throw new Error("Not found");
+  }
+
+  for (const key of Object.keys(existing)) {
+    if (JSON.stringify(existing[key] ?? "") !== JSON.stringify(req.body[key])) {
+      changes = { ...changes, [key]: req.body[key] };
+    }
+  }
+
+  const new_edited_programme = await db.programme.update({
+    data: changes,
+    where: {
+      id: parseInt(req.params.id),
+    },
+  });
+
+  res.json(new_edited_programme);
+});
+
 app.get("/api/home/programmes", async (req, res) => {
   const searchParams = req.query as any;
 
@@ -266,6 +305,9 @@ app.get("/api/home/programmes", async (req, res) => {
       },
       include: {
         author: true,
+      },
+      orderBy: {
+        created: "desc",
       },
     });
   } else if (searchParams ? searchParams["region"] : false) {

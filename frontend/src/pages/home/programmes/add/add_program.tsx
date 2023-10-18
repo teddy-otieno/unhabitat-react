@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import Select from "react-select";
-import { useRouter } from "next/navigation";
+import Background from "../../../../assets/landing.jpg";
 import { useNavigate } from "react-router-dom";
 import {
   Country,
@@ -72,6 +72,22 @@ export default function AddProgram() {
   const [cover_image, set_cover_image] = React.useState<string | null>(
     programme?.cover_image ?? null
   );
+
+  React.useEffect(() => {
+    if (programme === null) {
+      return;
+    }
+
+    set_description(programme.description);
+    set_program_type(programme.programme_type);
+    set_cover_image(programme.cover_image);
+    set_title(programme.title);
+    set_programme_markdown(programme.content);
+
+    if (programme.programme_type === "COUNTRY") {
+      set_selected_item(programme.region_id);
+    }
+  }, [programme]);
   const [country_id, set_country_id] = React.useState<number | undefined>(
     undefined
   );
@@ -116,6 +132,9 @@ export default function AddProgram() {
           `?user_id=${window.localStorage.getItem("user_id")}`,
         {
           method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
           body: JSON.stringify({
             title: title,
             description: description,
@@ -137,33 +156,15 @@ export default function AddProgram() {
 
   return (
     <div
-      className="flex flex-col items-center h-full w-full"
+      className="flex flex-col items-center min-h-screen w-full justify-center"
       data-color-mode="light"
+      style={{
+        backgroundImage: `url('${Background}')`,
+      }}
     >
-      <div className=" flex flex-col gap-4 p-8 w-2/3">
-        <form className="flex flex-col gap-4">
-          <button
-            className="primary-button"
-            onClick={(e) => {
-              e.preventDefault();
-              submit_new_programme();
-            }}
-          >
-            {programme ? "Edit Programme" : "Add Programme"}
-          </button>
-          <input
-            type={"file"}
-            onChange={(e) => {
-              const file = e.target.files![0];
-              const reader = new FileReader();
-              reader.onload = (e) => {
-                if (typeof reader.result === "string") {
-                  set_cover_image(btoa(reader.result as string));
-                }
-              };
-              reader.readAsBinaryString(file);
-            }}
-          />
+      <div className=" flex flex-col gap-4 p-8 w-2/3 justify-center">
+        <form className="flex flex-col gap-4 bg-white p-8 border shadow rounded-lg">
+          <h1 className="text-center font-bold text-xl">Add a new Programme</h1>
           <input
             type="text"
             placeholder="Title"
@@ -195,6 +196,7 @@ export default function AddProgram() {
                   })}
                   onChange={(e) => {
                     set_selected_item(e?.value ?? 0);
+                    set_country_id(e?.value ?? 0);
                   }}
                 />
               </div>
@@ -244,6 +246,28 @@ export default function AddProgram() {
             value={program_markdown}
             onChange={(e) => set_programme_markdown(e.target.value)}
           />
+          <input
+            type={"file"}
+            onChange={(e) => {
+              const file = e.target.files![0];
+              const reader = new FileReader();
+              reader.onload = (e) => {
+                if (typeof reader.result === "string") {
+                  set_cover_image(btoa(reader.result as string));
+                }
+              };
+              reader.readAsBinaryString(file);
+            }}
+          />
+          <button
+            className="primary-button"
+            onClick={(e) => {
+              e.preventDefault();
+              submit_new_programme();
+            }}
+          >
+            {programme ? "Edit Programme" : "Add Programme"}
+          </button>
         </form>
       </div>
     </div>

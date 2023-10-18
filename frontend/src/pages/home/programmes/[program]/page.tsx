@@ -1,17 +1,24 @@
 import React from "react";
+import { useParams } from "react-router-dom";
+import { Programme, server_url } from "../../../../utils";
 
-export default function Programme() {
+export default function ViewProgramme() {
+  const params = useParams();
+
   const [programme, set_programme] = React.useState<Programme | null>(null);
 
   React.useEffect(() => {
     console.log("INSIDE EFFECT");
     void (async () => {
-      const p = await fetch(`/api/programmes/${programme}`, {
-        method: "GET",
-      }).then((x) => x.json());
+      const p = await fetch(
+        server_url + `/api/home/programmes/${params["id"]}`,
+        {
+          method: "GET",
+        }
+      ).then((x) => x.json());
       set_programme(p);
     })();
-  }, [programme]);
+  }, [params]);
 
   return (
     <div className="flex flex-col items-center p-8">
